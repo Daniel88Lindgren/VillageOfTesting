@@ -42,7 +42,7 @@ class VillageInputTest {
 
 
 
-    // Save and load test of village
+    // Save and load test of village.
     @Test
     public void saveAndLoadVillage_Test(){
 
