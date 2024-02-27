@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.SQLOutput;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,8 +23,6 @@ class VillageTest {
     public void setUp(){
         village = new Village();
     }
-
-
 
 
 
@@ -85,7 +84,7 @@ class VillageTest {
 
         // Test: Add 6 workers to make sure "isFull" function works that is controlled by "maxWorkers" of 6 by default.
         @Test
-        public void overrideAddingMaximumWorkerAtStart_ShallSucceed(){
+        public void overrideAddingMaximumWorkerAtStart_ShallSucceed(){ // ÄNDRA I VILLAGE KLASSEN MED IF SATS FÖR ATT KUNNA STOPPA ADDING AV WORKERS EFTER 6ST.
 
             int initialWorkers = village.getMaxWorkers();
 
@@ -94,8 +93,12 @@ class VillageTest {
                 village.AddWorker("Worker" + i, "builder");
             }
 
+            village.AddWorker("One_worker_to_much_Kalle", "farmer");
+
+
             // "isFull" shall be true when value is 6 or above. NOTE! More workers can be added due to function in "VillageInput" class that's not accessible in this test for now.
             assertTrue(village.isFull(), "Maximum workers at start shall be full at 6.");
+            assertEquals(village.getMaxWorkers(), village.getWorkers().size());
 
         }
     }
@@ -216,7 +219,7 @@ class VillageTest {
 
     // Test: 5 days with no food for worker game shall be over.
     @Test
-    public void workerWithNoFoodUntilGameOver_SixDays_ShouldSucceed(){
+    public void workerNoFoodUntilGameOver_6Days_ShouldSucceed(){
 
         // Set food to 0.
         village.setFood(0);
@@ -325,8 +328,9 @@ class VillageTest {
             int maxDaysToSimulate = 60;
 
             // Loops until "village buildings" is greater than "default buildings" AND "daycounter" not is over 60.
-            while (village.getBuildings().size() <= initialBuildings && dayCounter < maxDaysToSimulate) {
+            while (village.getBuildings().size() <= initialBuildings) {
                 village.Day();
+                System.out.println("Day passed = " + dayCounter);
                 dayCounter++;
             }
 
@@ -334,7 +338,7 @@ class VillageTest {
             int expectedQuantityBuildings = initialBuildings + 1;
 
 
-            System.out.println("Daycounter: " + dayCounter);
+            System.out.println("Daycounter total: " + dayCounter);
             assertTrue(village.getBuildings().size() > initialBuildings, "Project shall be increased when '" + project + "' is added");
             assertEquals(expectedQuantityBuildings, village.getBuildings().size());
 
@@ -520,12 +524,16 @@ class VillageTest {
     }
 
 
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
 

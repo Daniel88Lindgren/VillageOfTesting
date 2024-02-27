@@ -87,14 +87,4 @@ class VillageInputTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
 }

@@ -61,6 +61,11 @@ public class Village {
         maxWorkers = 6;
         food = 10;
     }
+
+
+
+
+
     public void Day() {
         FeedWorkers();
         boolean someoneAlive = false;
@@ -115,15 +120,26 @@ public class Village {
     }
 
 
+
+    // --------> EDIT! Code change due to testing results of adding workers out of bounds for "maxWorkers" <--------
     public void AddWorker(String name, String occupation) {
-        if(occupationHashMap.containsKey(occupation)) {
+
+        // Check if "maxWorkers" has been reached.
+        if (workers.size() >= maxWorkers) {
+            System.out.println("There is nowhere for the new worker to live!  The maximum number of " + maxWorkers + " workers has been reached.");
+            System.out.println("Make more houses!");
+            return;
+        }
+
+        // Check if occupation is correct.
+        if (occupationHashMap.containsKey(occupation)) {
             IOccupationAction jobInterface = occupationHashMap.get(occupation);
             Worker worker = new Worker(name, occupation, jobInterface);
             workers.add(worker);
             System.out.println(name + " was successfully added.");
-            return;
+        } else {
+            System.out.println("There is no such job.");
         }
-        System.out.println("There is no such job.");
     }
 
     public void AddProject(String name) {
