@@ -6,4 +6,3 @@
 
 - Program used: IntelliJ.
 
-- NOTE! One exception in testlist "AddingWorkers_Test" -> "overrideAddingMaximumWorkerAtStar_ShallSucceed". Due description we could not get righ parameterts to conform this function at 100%.
