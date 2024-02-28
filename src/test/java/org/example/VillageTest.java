@@ -246,11 +246,11 @@ class VillageTest {
         static Stream<Arguments>provideResourcesForProjects(){
 
             return Stream.of(
-                    Arguments.of("House", 10, 10),
-                    Arguments.of("Woodmill", 10, 10),
-                    Arguments.of("Quarry", 10, 10),
-                    Arguments.of("Farm", 10, 10),
-                    Arguments.of("Castle", 100, 100)
+                    Arguments.of("House", 5, 0),
+                    Arguments.of("Woodmill", 5, 1),
+                    Arguments.of("Quarry", 3, 5),
+                    Arguments.of("Farm", 5, 2),
+                    Arguments.of("Castle", 50, 50)
             );
 
 
@@ -324,14 +324,12 @@ class VillageTest {
             // Counter for days to attempt building the project.
             int dayCounter = 0;
 
-            // Safe limiter for building to complete in loop
-            int maxDaysToSimulate = 60;
 
             // Loops until "village buildings" is greater than "default buildings" AND "daycounter" not is over 60.
             while (village.getBuildings().size() <= initialBuildings) {
-                village.Day();
-                System.out.println("Day passed = " + dayCounter);
+                System.out.println("Day passed: " + dayCounter);
                 dayCounter++;
+                village.Day();
             }
 
             // Extra check that exactly 1 more building is complete each run.
@@ -520,6 +518,111 @@ class VillageTest {
             assertEquals(expectedMaximumWorkers, actualMaximumAmountWorkers);
             assertTrue(initialMaxAmountWorkers < actualMaximumAmountWorkers);
         }
+
+    }
+
+
+    @Test
+    public void fullGameRunTest_shallSucceed(){
+
+
+        // Sequence 1. Set up workers and house for resources.
+
+        System.out.println("----------------------// Sequence 1. Set up workers and house for resources.-------------------------------");
+        village.AddWorker("James", "farmer");
+        village.AddWorker("Bengt", "farmer");
+        village.AddWorker("Henry", "builder");
+        village.AddWorker("Sten", "miner");
+        village.AddWorker("Iris", "lumberjack");
+        village.AddWorker("Clara", "lumberjack");
+
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+
+        village.AddProject("House");
+
+        village.Day();
+        village.Day();
+        village.Day();
+
+        village.AddProject("House");
+
+        village.Day();
+        village.Day();
+        village.Day();
+
+        village.AddWorker("Bob", "builder");
+        village.AddWorker("Steffo", "miner");
+        village.AddWorker("Knut", "miner");
+        village.AddWorker("Pelle", "lumberjack");
+
+        // Check: workers values, buildings values, days passed, game is over.
+        assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
+        assertEquals(5, village.getBuildings().size(), "Expected 5 buildings");
+        assertEquals(10, village.getDaysGone(),"Expected days gone: 10");
+        assertFalse(village.isGameOver(), "Game shall be finish after castle is complete.");
+
+
+
+        // Sequence 2. Set up all buildings except castle.
+
+        System.out.println("----------------------// Sequence 2. Set up all buildings except castle.-------------------------------");
+
+
+        village.AddProject("Woodmill");
+        village.AddProject("Quarry");
+        village.AddProject("Farm");
+
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+
+        // Check: workers values, buildings values, days passed, game is over.
+        assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
+        assertEquals(8, village.getBuildings().size(), "Expected 8 buildings");
+        assertEquals(19, village.getDaysGone(), "Expected days gone: 19");
+        assertFalse(village.isGameOver(), "Game shall be finish after castle is complete.");
+
+
+
+        // Sequence 3. Collect enough wood and metal and build castle to win the game.
+        System.out.println("----------------------// Sequence 3. Collect enough wood and metal and build castle to win the game..-------------------------------");
+
+
+        // Check that resources is enough for castle to be built.
+        assertTrue(50 <= village.getWood());
+        assertTrue(50 <= village.getMetal());
+
+
+        village.AddProject("Castle");
+
+        // 25 days.
+        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+
+        // Check: workers values, buildings values, days passed, game is over.
+        assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
+        assertEquals(9, village.getBuildings().size(), "Expected 8 buildings");
+        assertEquals(44, village.getDaysGone(), "Expected days gone: 44");
+        assertTrue(village.isGameOver(), "Game shall be finish after castle is complete.");
+
+
+
+
+
+
+
 
     }
 

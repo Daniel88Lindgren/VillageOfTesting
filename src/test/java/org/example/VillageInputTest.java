@@ -57,7 +57,7 @@ class VillageInputTest {
         existingVillages.add("MyVillage");
 
 
-        // Mocking "TowNames" to return a list with town names.
+        // Mocking "TownNames" to return a list with town names.
         when(mockDatabaseConnection.GetTownNames()).thenReturn(existingVillages);
         // Mocking "SaveVillage" to return a boolean.
         when(mockDatabaseConnection.SaveVillage(any(Village.class),eq("MyVillage"))).thenReturn(true);
