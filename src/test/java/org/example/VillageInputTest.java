@@ -23,6 +23,7 @@ class VillageInputTest {
     // Copies original "system.in" for restore at the end.
     private final InputStream originalSystemIn = System.in;
 
+
     // Mocking the "DatabaseConnection".
     @Mock
     private DatabaseConnection mockDatabaseConnection;
@@ -39,6 +40,90 @@ class VillageInputTest {
         mockitoClosable.close();
         System.setIn(originalSystemIn);
     }
+
+
+    @Test
+    public void saveWithIncorrectName_Test(){
+
+        // Create a user input for cancel.
+        String userInput = "laholmVillage\nNÄ\nNÄ";
+        System.setIn(new ByteArrayInputStream(userInput.getBytes()));
+
+        ArrayList<String> existingVillages = new ArrayList<>();
+        existingVillages.add("halmstadVillage");
+
+        // Configure mocking
+        when(mockDatabaseConnection.GetTownNames()).thenReturn(existingVillages);
+
+        Village village = new Village();
+        VillageInput villageInput = new VillageInput(village, mockDatabaseConnection);
+
+        // Save action
+        villageInput.Save();
+
+        // Verify
+        verify(mockDatabaseConnection, never()).SaveVillage(any(Village.class), eq("MyVillage"));
+
+    }
+
+
+    // Not use "y" on save. Results in cancel.
+    @Test
+    public void saveAndUseCancel_Test(){
+
+        // Create a user input for cancel.
+        String userInput = "laholmVillage\nNÄ\nNÄ";
+        System.setIn(new ByteArrayInputStream(userInput.getBytes()));
+
+        ArrayList<String> existingVillages = new ArrayList<>();
+        existingVillages.add("laholmVillage");
+
+        // Configure mocking
+        when(mockDatabaseConnection.GetTownNames()).thenReturn(existingVillages);
+
+        Village village = new Village();
+        VillageInput villageInput = new VillageInput(village, mockDatabaseConnection);
+
+        // Save action
+        villageInput.Save();
+
+        // Verify
+        verify(mockDatabaseConnection, never()).SaveVillage(any(Village.class), eq("MyVillage"));
+
+    }
+
+    @Test
+    public void loadNonExistingVillage_Test(){
+
+        // Simulate user input.
+        String input = "laholm\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        // Configure mocking to simulate village that's not on the list.
+        ArrayList<String> existingVillages = new ArrayList<>();
+        existingVillages.add("halmstad");
+
+        // Mock "GetTownNames".
+        when(mockDatabaseConnection.GetTownNames()).thenReturn(existingVillages);
+
+        // New instances with mocked "databaseConnection".
+        Village village = new Village();
+        VillageInput villageInput = new VillageInput(village, mockDatabaseConnection);
+
+        // Load action.
+        villageInput.Load();
+
+        // Verify that load was never succeeded.
+        verify(mockDatabaseConnection, never()).LoadVillage(anyString());
+
+
+    }
+
+
+
+
+
+
 
 
 
@@ -59,10 +144,13 @@ class VillageInputTest {
 
         // Mocking "TownNames" to return a list with town names.
         when(mockDatabaseConnection.GetTownNames()).thenReturn(existingVillages);
+
         // Mocking "SaveVillage" to return a boolean.
         when(mockDatabaseConnection.SaveVillage(any(Village.class),eq("MyVillage"))).thenReturn(true);
+
         // Mocking "LoadVillage" for a return of a new village instance.
         when(mockDatabaseConnection.LoadVillage("MyVillage")).thenReturn(new Village());
+
 
 
         // New village instance.
@@ -85,6 +173,11 @@ class VillageInputTest {
 
 
     }
+
+
+
+
+
 
 
 }

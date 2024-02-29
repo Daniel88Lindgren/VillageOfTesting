@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.SQLOutput;
 import java.util.stream.Stream;
@@ -40,7 +41,7 @@ class VillageTest {
             village.AddWorker("henry", "miner");
             village.AddWorker("iris", "lumberjack");
 
-            assertEquals(4, village.getWorkers().size(), "Should have exact 4 workers now with all different occupation.");
+            assertEquals(4, village.getWorkers().size(), "There shall be 4 workers.");
         }
 
 
@@ -58,7 +59,8 @@ class VillageTest {
             int newWorkerCount = village.getWorkers().size();
 
             // Comparing to make sure no new workers been added with unacceptable occupation.
-            assertEquals(initialWorkerCount, newWorkerCount, "Worker with unacceptable occupation shall not be added.");
+            assertEquals(initialWorkerCount, newWorkerCount, "There shall not be any workers");
+            assertEquals(0, village.getWorkers().size(), "There shall not be any workers");
         }
 
 
@@ -70,14 +72,18 @@ class VillageTest {
             int allWorkersAtStart = village.getMaxWorkers();
 
             // Adding maximum of workers.
-            for (int i = village.getWorkers().size() ; i < village.getMaxWorkers(); i++) {
-                village.AddWorker("Worker" + i, "builder");
-            }
+            village.AddWorker("Worker1", "farmer");
+            village.AddWorker("Worker2", "farmer");
+            village.AddWorker("Worker3", "farmer");
+            village.AddWorker("Worker4", "farmer");
+            village.AddWorker("Worker5", "farmer");
+            village.AddWorker("Worker6", "farmer");
 
             // Store value of all workers.
             int workersAddedToMaximum = village.getWorkers().size();
 
-            assertEquals(allWorkersAtStart, workersAddedToMaximum, "Maximum allowed workers at start is 6.");
+            assertEquals(allWorkersAtStart, workersAddedToMaximum, "There shall be 6 workers.");
+            assertEquals(6, village.getWorkers().size(), "There shall be 6 workers.");
         }
 
 
@@ -86,19 +92,19 @@ class VillageTest {
         @Test
         public void overrideAddingMaximumWorkerAtStart_ShallSucceed(){ // ÄNDRA I VILLAGE KLASSEN MED IF SATS FÖR ATT KUNNA STOPPA ADDING AV WORKERS EFTER 6ST.
 
-            int initialWorkers = village.getMaxWorkers();
-
             // Add maximum amount of workers.
-            for (int i = 0; i < village.getMaxWorkers(); i++) {
-                village.AddWorker("Worker" + i, "builder");
-            }
+            village.AddWorker("Worker1", "farmer");
+            village.AddWorker("Worker2", "farmer");
+            village.AddWorker("Worker3", "farmer");
+            village.AddWorker("Worker4", "farmer");
+            village.AddWorker("Worker5", "farmer");
+            village.AddWorker("Worker6", "farmer");
 
+            // Adding one worker to much
             village.AddWorker("One_worker_to_much_Kalle", "farmer");
 
-
-            // "isFull" shall be true when value is 6 or above. NOTE! More workers can be added due to function in "VillageInput" class that's not accessible in this test for now.
             assertTrue(village.isFull(), "Maximum workers at start shall be full at 6.");
-            assertEquals(village.getMaxWorkers(), village.getWorkers().size());
+            assertEquals(6, village.getWorkers().size(), "Maximum workers at start shall be full at 6.");
 
         }
     }
@@ -106,25 +112,28 @@ class VillageTest {
 
 
 
-    // Test: Workers occupation is "farming" after using method "Day" 10 times.
-    @Test
-    public void workerContinueWithOccupation_After10Day_ShouldSucceed(){
+    // Test: Workers occupation is after 10 days.
+    @ParameterizedTest
+    @ValueSource(strings =  {"farmer", "builder", "miner", "lumberjack"})
+    public void workerContinueWithOccupation_After10Day_ShouldSucceed(String occupation){
 
         // Store task "farmer" in new variable "occupation".
-        String occupation = "farmer";
+        String occupationDefault = occupation;
         // Add worker for farming.
         village.AddWorker("Henry", occupation);
 
-        // Simulate 50 days.
-        for (int i = 0; i < 10; i++){
-            village.Day();
-        }
+        // Simulate 10 days.
+        village.Day(); village.Day();
+        village.Day(); village.Day();
+        village.Day(); village.Day();
+        village.Day(); village.Day();
+        village.Day(); village.Day();
 
         // Get workers occupation after 10 days.
         Worker worker = village.getWorkers().get(0);
         String actualOccupation = worker.getOccupation();
 
-        assertEquals(occupation, actualOccupation, "Worker should remain farming after 50 days");
+        assertEquals(occupationDefault, actualOccupation, "Worker should remain with" + occupation +  "after 10 days");
     }
 
 
@@ -140,17 +149,13 @@ class VillageTest {
 
             // Store resources in new variables AND one worker.
             int initialWorker = 0;
-            int initialFood = village.getFood();
-            int initialMetal = village.getMetal();
-            int initialWood = village.getWood();
 
             // Simulate 1 day
             village.Day();
 
-            assertEquals(initialWorker, village.getWorkers().size());
-            assertEquals(initialWood, village.getWood(), "Wood should be by default 10");
-            assertEquals(initialMetal, village.getMetal(), "Metal should be by default 0");
-            assertEquals(initialFood, village.getFood(), "Food should be by default 10");
+            assertEquals(10, village.getWood(), "Wood should be by default 10");
+            assertEquals(10, village.getMetal(), "Metal should be by default 10");
+            assertEquals(10, village.getFood(), "Food should be by default 10");
         }
 
 
@@ -169,8 +174,9 @@ class VillageTest {
 
             int actualFood = village.getFood();
 
-           // assertEquals(expectedFood, actualFood, "Food shall be 14. 10 at start + 5 per day - 1 worker eats.");
-            assertTrue(initialFood < actualFood, "Food shall increased");
+
+            assertTrue(initialFood < actualFood, "Food shall be 14");
+            assertEquals(14, village.getFood(), "Food shall be 14");
 
         }
 
@@ -188,10 +194,10 @@ class VillageTest {
             // Simulate 1 day.
             village.Day();
 
-            // 1 wood added per day. "initialWood" 0 + "Wood" each day 1 = 1.
             int actualWood = village.getWood();
 
-            assertTrue(initialWood < actualWood, "Wood shall increase.");
+            assertTrue(initialWood < actualWood, "Wood shall be 11");
+            assertEquals(11, village.getWood(), "Wood shall be 11");
 
         }
 
@@ -209,10 +215,10 @@ class VillageTest {
             // Simulate 1 day.
             village.Day();
 
-            // 1 metal added per day. "initialMetal" 0 + "metal" each day 1 = 1.
             int actualMetal = village.getMetal();
 
-            assertTrue(initialMetal < actualMetal, "Metal shall increase.");
+            assertTrue(initialMetal < actualMetal, "Metal shall be 11");
+            assertEquals(11, village.getMetal(), "Metal shall be 11");
         }
     }
 
@@ -227,10 +233,13 @@ class VillageTest {
         // Add worker.
         village.AddWorker("worker","miner");
 
-        // Simulate 1 day until game over due to starvation of the mining worker.
-        for (int i = 0; i < 6; i++) {
-            village.Day();
-        }
+        // Simulate 6 day until game over due to starvation of the worker.
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
+        village.Day();
 
         // "gameOver" function is true then all workers have died due to no food and game will be over.
         assertTrue(village.isGameOver(), "After 6 days of no food game shall be over");
@@ -273,7 +282,8 @@ class VillageTest {
             village.AddProject(project);
 
 
-            assertTrue(village.getProjects().size() > initialProjects, "Project shall be increased when 'Farm' is added");
+            assertTrue(village.getProjects().size() > initialProjects, "Project queue shall be increased by 1");
+            assertEquals(1, village.getProjects().size(), "Project queue shall be increased by 1");
 
         }
 
@@ -290,14 +300,15 @@ class VillageTest {
             // Store default projects in variable
             int initialProjects = village.getProjects().size();
 
-            village.setWood(-70);
-            village.setMetal(-70);
+            village.setWood(3);
+            village.setMetal(3);
 
             // Add a project farm.
             village.AddProject(project);
 
 
-            assertFalse(village.getProjects().size() > initialProjects, "Project shall be increased when 'Farm' is added");
+            assertFalse(village.getProjects().size() > initialProjects, "No project shall be in queue");
+            assertEquals(0, village.getProjects().size(), "No project shall be in queue");
 
         }
 
@@ -337,9 +348,10 @@ class VillageTest {
 
 
             System.out.println("Daycounter total: " + dayCounter);
-            assertTrue(village.getBuildings().size() > initialBuildings, "Project shall be increased when '" + project + "' is added");
-            assertEquals(expectedQuantityBuildings, village.getBuildings().size());
 
+            assertTrue(village.getBuildings().size() > initialBuildings, "Project shall be increased when '" + project + "' is added");
+            assertEquals(expectedQuantityBuildings, village.getBuildings().size(),"Project shall be increased when '" + project + "' is added");
+            assertEquals(dayCounter, village.getDaysGone() , "days to complete a building shall be same as daycounter for a correct gameplay");
 
         }
 
@@ -357,7 +369,6 @@ class VillageTest {
             // Set and reset values and store in a variables.
             village.setWood(0);
             int initialWood = village.getWood();
-            int initialBuilding = village.getBuildings().size();
 
             // Add worker to complete woodmill.
             village.AddWorker("Bengt", "builder");
@@ -370,10 +381,12 @@ class VillageTest {
             // Add project.
             village.AddProject("Woodmill");
 
-            // Loops though days until new building is complete.
-            while (village.getBuildings().size() <= initialBuilding){
-                village.Day();
-            }
+            // 5 days to complete woodmill.
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Reset resources to be able to count new ones when building is complete.
             village.setWood(0);
@@ -384,16 +397,16 @@ class VillageTest {
             village.AddWorker("Fredd", "lumberjack");
 
             // Run 3 days
-            for (int i = 0; i < 3; i++){
-                village.Day();
-            }
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Store new values and expected from game description.
             int actual3DaysWood = village.getWood();
             int expectedWoodValue = 6;
 
-            assertEquals(expectedWoodValue, actual3DaysWood);
-            assertTrue(initialWood < actual3DaysWood);
+            assertEquals(expectedWoodValue, actual3DaysWood, "Expected amount of wood: 6");
+            assertTrue(initialWood < actual3DaysWood, "Expected amount of wood: 6");
         }
 
 
@@ -403,7 +416,6 @@ class VillageTest {
             // Set and reset values and store in a variables.
             village.setMetal(0);
             int initialMetal = village.getMetal();
-            int initialBuilding = village.getBuildings().size();
 
             // Add worker to complete Quarry.
             village.AddWorker("Bengt", "builder");
@@ -416,10 +428,14 @@ class VillageTest {
             // Add project.
             village.AddProject("Quarry");
 
-            // Loops though days until new building is complete.
-            while (village.getBuildings().size() <= initialBuilding){
-                village.Day();
-            }
+            // 7 days to complete quarry.
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Reset resources to be able to count new ones when building is complete.
             village.setWood(0);
@@ -429,17 +445,17 @@ class VillageTest {
             // Add a miner so resources shall increase.
             village.AddWorker("Fredd", "miner");
 
-            // Run 3 days
-            for (int i = 0; i < 3; i++){
-                village.Day();
-            }
+            // Run 3 days.
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Store new values and expected from game description.
             int actual3DaysMetal= village.getMetal();
             int expectedMetalValue = 6;
 
-            assertEquals(expectedMetalValue, actual3DaysMetal);
-            assertTrue(initialMetal < actual3DaysMetal);
+            assertEquals(expectedMetalValue, actual3DaysMetal, "Expected amount of metal: 6");
+            assertTrue(initialMetal < actual3DaysMetal, "Expected amount of metal: 6");
         }
 
         @Test
@@ -448,7 +464,6 @@ class VillageTest {
             // Set and reset values and store in a variables.
             village.setFood(0);
             int initialFood = village.getFood();
-            int initialBuilding = village.getBuildings().size();
 
             // Add worker to complete Farm.
             village.AddWorker("Bengt", "builder");
@@ -461,10 +476,12 @@ class VillageTest {
             // Add project.
             village.AddProject("Farm");
 
-            // Loops though days until new building is complete.
-            while (village.getBuildings().size() <= initialBuilding){
-                village.Day();
-            }
+            // 5 days to complete farm.
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Reset resources to be able to count new ones when building is complete.
             village.setWood(0);
@@ -475,16 +492,16 @@ class VillageTest {
             village.AddWorker("Fredd", "farmer");
 
             // Run 3 days
-            for (int i = 0; i < 3; i++){
-                village.Day();
-            }
+            village.Day();
+            village.Day();
+            village.Day();
 
             // Store new values and expected from game description.
             int actual3DaysFood = village.getFood();
-            int expectedMetalValue = 30;
+            int expectedFoodValue = 30;
 
-            assertEquals(expectedMetalValue, actual3DaysFood);
-            assertTrue(initialFood < actual3DaysFood);
+            assertEquals(expectedFoodValue, actual3DaysFood, "Expected amount food: 30");
+            assertTrue(initialFood < actual3DaysFood, "Expected amount food: 30");
         }
 
         @Test
@@ -492,7 +509,6 @@ class VillageTest {
 
             // Set and reset values and store in a variables.
             int initialMaxAmountWorkers = village.getMaxWorkers();
-            int initialBuilding = village.getBuildings().size();
 
             // Add worker to complete Farm.
             village.AddWorker("Bengt", "builder");
@@ -506,17 +522,17 @@ class VillageTest {
             village.AddProject("House");
 
             // Loops though days until new building is complete.
-            while (village.getBuildings().size() <= initialBuilding){
-                village.Day();
-            }
+            village.Day();
+            village.Day();
+            village.Day();
 
 
             // Store new values and expected from game description. 6 by default + 2 per house = 8 maxWorkers.
             int actualMaximumAmountWorkers = village.getMaxWorkers();
             int expectedMaximumWorkers = 8;
 
-            assertEquals(expectedMaximumWorkers, actualMaximumAmountWorkers);
-            assertTrue(initialMaxAmountWorkers < actualMaximumAmountWorkers);
+            assertEquals(expectedMaximumWorkers, actualMaximumAmountWorkers, "Expected amount of workers: 8.");
+            assertTrue(initialMaxAmountWorkers < actualMaximumAmountWorkers, "Expected amount of workers: 8.");
         }
 
     }
@@ -528,7 +544,7 @@ class VillageTest {
 
         // Sequence 1. Set up workers and house for resources.
 
-        System.out.println("----------------------// Sequence 1. Set up workers and house for resources.-------------------------------");
+        System.out.println("---------------------------// Sequence 1. Set up workers and house for resources.------------------------------------");
         village.AddWorker("James", "farmer");
         village.AddWorker("Bengt", "farmer");
         village.AddWorker("Henry", "builder");
@@ -536,6 +552,7 @@ class VillageTest {
         village.AddWorker("Iris", "lumberjack");
         village.AddWorker("Clara", "lumberjack");
 
+        // Tot 10 days
         village.Day();
         village.Day();
         village.Day();
@@ -568,13 +585,14 @@ class VillageTest {
 
         // Sequence 2. Set up all buildings except castle.
 
-        System.out.println("----------------------// Sequence 2. Set up all buildings except castle.-------------------------------");
+        System.out.println("---------------------------// Sequence 2. Set up all buildings except castle.------------------------------------");
 
 
         village.AddProject("Woodmill");
         village.AddProject("Quarry");
         village.AddProject("Farm");
 
+        // 9 days.
         village.Day();
         village.Day();
         village.Day();
@@ -594,7 +612,7 @@ class VillageTest {
 
 
         // Sequence 3. Collect enough wood and metal and build castle to win the game.
-        System.out.println("----------------------// Sequence 3. Collect enough wood and metal and build castle to win the game..-------------------------------");
+        System.out.println("---------------------------// Sequence 3. Collect enough wood and metal and build castle to win the game..------------------------------------");
 
 
         // Check that resources is enough for castle to be built.
@@ -616,10 +634,6 @@ class VillageTest {
         assertEquals(9, village.getBuildings().size(), "Expected 8 buildings");
         assertEquals(44, village.getDaysGone(), "Expected days gone: 44");
         assertTrue(village.isGameOver(), "Game shall be finish after castle is complete.");
-
-
-
-
 
 
 

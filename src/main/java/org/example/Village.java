@@ -126,8 +126,7 @@ public class Village {
 
         // Check if "maxWorkers" has been reached.
         if (workers.size() >= maxWorkers) {
-            System.out.println("There is nowhere for the new worker to live!  The maximum number of " + maxWorkers + " workers has been reached.");
-            System.out.println("Make more houses!");
+            System.out.println("The maximum number of " + maxWorkers + " workers has been reached. Build more houses!");
             return;
         }
 
