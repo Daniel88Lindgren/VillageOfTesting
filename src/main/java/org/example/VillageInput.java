@@ -103,7 +103,8 @@ public class VillageInput {
             System.out.println("Are you sure you want to overwrite " + choice + "? Write \"y\" for yes. Anything else for no.");
             String yes = scanner.nextLine().toLowerCase();
             if (!yes.equals("y")) {
-                System.out.println("Cancelling load.");
+                //--------------> EDIT! Change message to more appropriate. "Cancelling save." instead of "Cancelling load." <---------------------
+                System.out.println("Cancelling save.");
                 return;
             }
         }
