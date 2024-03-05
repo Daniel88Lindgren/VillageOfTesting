@@ -12,9 +12,9 @@ import java.util.HashMap;
 public class Village {
 
     private boolean gameOver = false;
-    private int food = 10;
-    private int wood = 10;
-    private int metal = 10;
+    private int food = 0;
+    private int wood = 0;
+    private int metal = 0;
     private ArrayList<Worker> workers = new ArrayList<>();
     private ArrayList<Building> buildings = new ArrayList<>();
     private ArrayList<Project> projects = new ArrayList<>();

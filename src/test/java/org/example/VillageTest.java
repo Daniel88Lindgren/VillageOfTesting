@@ -1,6 +1,7 @@
 package org.example;
 
 import com.sun.jdi.connect.Connector;
+import org.example.objects.Building;
 import org.example.objects.Worker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,8 +155,8 @@ class VillageTest {
             // Simulate 1 day
             village.Day();
 
-            assertEquals(10, village.getWood(), "Wood should be by default 10");
-            assertEquals(10, village.getMetal(), "Metal should be by default 10");
+            assertEquals(0, village.getWood(), "Wood should be by default 10");
+            assertEquals(0, village.getMetal(), "Metal should be by default 10");
             assertEquals(10, village.getFood(), "Food should be by default 10");
         }
 
@@ -197,7 +199,7 @@ class VillageTest {
             int actualWood = village.getWood();
 
             assertTrue(initialWood < actualWood, "Wood shall be 11");
-            assertEquals(11, village.getWood(), "Wood shall be 11");
+            assertEquals(1, village.getWood(), "Wood shall be 11");
 
         }
 
@@ -218,7 +220,7 @@ class VillageTest {
             int actualMetal = village.getMetal();
 
             assertTrue(initialMetal < actualMetal, "Metal shall be 11");
-            assertEquals(11, village.getMetal(), "Metal shall be 11");
+            assertEquals(1, village.getMetal(), "Metal shall be 11");
         }
     }
 
@@ -244,6 +246,9 @@ class VillageTest {
         // "gameOver" function is true then all workers have died due to no food and game will be over.
         assertTrue(village.isGameOver(), "After 6 days of no food game shall be over");
     }
+
+
+
 
 
 
@@ -336,7 +341,7 @@ class VillageTest {
             int dayCounter = 0;
 
 
-            // Loops until "village buildings" is greater than "default buildings" AND "daycounter" not is over 60.
+            // Loops until "village buildings" is greater than "default buildings".
             while (village.getBuildings().size() <= initialBuildings) {
                 System.out.println("Day passed: " + dayCounter);
                 dayCounter++;
@@ -352,6 +357,7 @@ class VillageTest {
             assertTrue(village.getBuildings().size() > initialBuildings, "Project shall be increased when '" + project + "' is added");
             assertEquals(expectedQuantityBuildings, village.getBuildings().size(),"Project shall be increased when '" + project + "' is added");
             assertEquals(dayCounter, village.getDaysGone() , "days to complete a building shall be same as daycounter for a correct gameplay");
+
 
         }
 
@@ -592,7 +598,9 @@ class VillageTest {
         village.AddProject("Quarry");
         village.AddProject("Farm");
 
-        // 9 days.
+        // 11 days.
+        village.Day();
+        village.Day();
         village.Day();
         village.Day();
         village.Day();
@@ -605,8 +613,8 @@ class VillageTest {
 
         // Check: workers values, buildings values, days passed, game is over.
         assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
-        assertEquals(8, village.getBuildings().size(), "Expected 8 buildings");
-        assertEquals(19, village.getDaysGone(), "Expected days gone: 19");
+        assertEquals(7, village.getBuildings().size(), "Expected 7 buildings");
+        assertEquals(21, village.getDaysGone(), "Expected days gone: 21");
         assertFalse(village.isGameOver(), "Game shall be finish after castle is complete.");
 
 
@@ -631,14 +639,117 @@ class VillageTest {
 
         // Check: workers values, buildings values, days passed, game is over.
         assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
-        assertEquals(9, village.getBuildings().size(), "Expected 8 buildings");
-        assertEquals(44, village.getDaysGone(), "Expected days gone: 44");
+        assertEquals(8, village.getBuildings().size(), "Expected 8 buildings");
+        assertEquals(46, village.getDaysGone(), "Expected days gone: 46");
         assertTrue(village.isGameOver(), "Game shall be finish after castle is complete.");
 
 
 
 
     }
+
+    @Nested
+    class GettersAndSetters_ValueTests {
+
+        @Test
+        public void setWood_NewValue_ShallSucced() {
+
+            village.setWood(50);
+            int newValue = village.getWood();
+
+            assertEquals(50, newValue, "Wood shall be 50");
+        }
+
+        @Test
+        public void setFood_NewValue_ShallSucced() {
+
+            village.setFood(50);
+            int newValue = village.getFood();
+
+            assertEquals(50, newValue, "Food shall be 50");
+        }
+
+        @Test
+        public void setMetal_NewValue_ShallSucced() {
+
+            village.setMetal(50);
+            int newValue = village.getMetal();
+
+            assertEquals(50, newValue, "Metal shall be 50");
+        }
+
+        @Test
+        public void setMaxWorkers_NewValue_ShallSucceed(){
+
+            village.setMaxWorkers(50);
+            int newValue = village.getMaxWorkers();
+
+            assertEquals(50, newValue , "Max workers shall be 50");
+        }
+
+        @Test
+        public void setDaysGone(){
+
+            village.setDaysGone(50);
+            int newValue = village.getDaysGone();
+
+            assertEquals(50, newValue, "Days shall be 50");
+        }
+
+        @Test
+        public void setGameOver(){
+
+            village.setGameOver(true);
+            boolean newValue = village.isGameOver();
+
+            assertEquals(true, newValue);
+        }
+
+        @Test
+        public void setWoodPerDay(){
+
+            village.setWoodPerDay(50);
+            int newValue = village.getWoodPerDay();
+
+            assertEquals(50, newValue);
+        }
+
+        @Test
+        public void setFoodPerDay(){
+
+            village.setFoodPerDay(50);
+            int newValue = village.getFoodPerDay();
+
+            assertEquals(50, newValue);
+        }
+
+        @Test
+        public void setMetalPerDay(){
+
+            village.setMetalPerDay(50);
+            int newValue = village.getMetalPerDay();
+
+            assertEquals(50, newValue);
+        }
+
+        @Test
+        public void getPrintInto(){
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+    }
+
+
 
 
 }

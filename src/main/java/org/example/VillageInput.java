@@ -144,4 +144,9 @@ public class VillageInput {
             System.out.println("Load failed.");
         }
     }
+
+
+
+
+
 }
