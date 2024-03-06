@@ -117,7 +117,7 @@ class VillageTest {
     // Test: Workers occupation is after 10 days.
     @ParameterizedTest
     @ValueSource(strings =  {"farmer", "builder", "miner", "lumberjack"})
-    public void workerContinueWithOccupation_After10Day_ShouldSucceed(String occupation){
+    public void workerContinueWithOccupation_10Days_ShouldSucceed(String occupation){
 
         // Store task "farmer" in new variable "occupation".
         String occupationDefault = occupation;
