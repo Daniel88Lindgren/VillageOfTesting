@@ -125,11 +125,9 @@ class VillageTest {
         village.AddWorker("Henry", occupation);
 
         // Simulate 10 days.
-        village.Day(); village.Day();
-        village.Day(); village.Day();
-        village.Day(); village.Day();
-        village.Day(); village.Day();
-        village.Day(); village.Day();
+        for (int i = 0; i < 10; i++){
+            village.Day();
+        }
 
         // Get workers occupation after 10 days.
         Worker worker = village.getWorkers().get(0);
@@ -236,12 +234,9 @@ class VillageTest {
         village.AddWorker("worker","miner");
 
         // Simulate 6 day until game over due to starvation of the worker.
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
+        for (int i = 0; i < 6; i++){
+            village.Day();
+        }
 
         // "gameOver" function is true then all workers have died due to no food and game will be over.
         assertTrue(village.isGameOver(), "After 6 days of no food game shall be over");
@@ -257,14 +252,14 @@ class VillageTest {
     class ProjectTest {
 
         // Parameter stream on resources for easier and more efficient coding. "Wood", "metal".
-        static Stream<Arguments>provideResourcesForProjects(){
+        static Stream<Arguments>provideResourcesForProjects(){//LÄGG TILL DAYS TO COMPLETE
 
             return Stream.of(
-                    Arguments.of("House", 5, 0),
-                    Arguments.of("Woodmill", 5, 1),
-                    Arguments.of("Quarry", 3, 5),
-                    Arguments.of("Farm", 5, 2),
-                    Arguments.of("Castle", 50, 50)
+                    Arguments.of("House", 5, 0, 3),
+                    Arguments.of("Woodmill", 5, 1, 5),
+                    Arguments.of("Quarry", 3, 5, 7),
+                    Arguments.of("Farm", 5, 2, 5),
+                    Arguments.of("Castle", 50, 50, 50)
             );
 
 
@@ -274,7 +269,7 @@ class VillageTest {
         // Test: Add all project with right recourses.
         @ParameterizedTest
         @MethodSource("provideResourcesForProjects")
-        public void addNewProject_WithEnoughRecourses_ShallSucceed (String project, int wood, int metal) {
+        public void addNewProject_WithEnoughRecourses_ShallSucceed (String project, int wood, int metal) {// LÄGG TILL DAYS TO COMPLETE FÖR ATT FÅ BORT WHILE LOOP
 
             // Setup materials for building.
             village.setWood(wood);
@@ -321,8 +316,7 @@ class VillageTest {
         // Test: Build all buildings complete with right amount of recourses.
         @ParameterizedTest
         @MethodSource("provideResourcesForProjects")
-        public void addNewProject_withEnoughResourcesAndABuilder_shallSucceed(String project, int wood, int metal) {
-
+        public void addNewProject_withEnoughResourcesAndABuilder_shallSucceed(String project, int wood, int metal, int daysToComplete) {
 
             // Store default projects in variable
             int initialBuildings = village.getBuildings().size();
@@ -337,33 +331,21 @@ class VillageTest {
             // Add a project from stream "provideResourcesForProjects".
             village.AddProject(project);
 
-            // Counter for days to attempt building the project.
-            int dayCounter = 0;
-
-
-            // Loops until "village buildings" is greater than "default buildings".
-            while (village.getBuildings().size() <= initialBuildings) {
-                System.out.println("Day passed: " + dayCounter);
-                dayCounter++;
+            // Simulate each day until the project is supposed to be complete.
+            for (int i = 0; i < daysToComplete; i++) {
                 village.Day();
             }
 
-            // Extra check that exactly 1 more building is complete each run.
+            // Check that exactly 1 more building is complete after the specified days.
             int expectedQuantityBuildings = initialBuildings + 1;
 
-
-            System.out.println("Daycounter total: " + dayCounter);
-
             assertTrue(village.getBuildings().size() > initialBuildings, "Project shall be increased when '" + project + "' is added");
-            assertEquals(expectedQuantityBuildings, village.getBuildings().size(),"Project shall be increased when '" + project + "' is added");
-            assertEquals(dayCounter, village.getDaysGone() , "days to complete a building shall be same as daycounter for a correct gameplay");
-
-
+            assertEquals(expectedQuantityBuildings, village.getBuildings().size(), "Project shall be increased when '" + project + "' is added");
+            assertEquals(daysToComplete, village.getDaysGone(), "days to complete a building shall be same as daysToComplete for a correct gameplay");
         }
 
-
-
     }
+
 
     @Nested
     class BuildingsEffect_3Days_Test{
@@ -435,13 +417,9 @@ class VillageTest {
             village.AddProject("Quarry");
 
             // 7 days to complete quarry.
-            village.Day();
-            village.Day();
-            village.Day();
-            village.Day();
-            village.Day();
-            village.Day();
-            village.Day();
+            for (int i = 0; i < 7; i++){
+                village.Day();
+            }
 
             // Reset resources to be able to count new ones when building is complete.
             village.setWood(0);
@@ -598,18 +576,9 @@ class VillageTest {
         village.AddProject("Quarry");
         village.AddProject("Farm");
 
-        // 11 days.
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
-        village.Day();
+        for (int i = 0; i < 11; i++){
+            village.Day();
+        }
 
         // Check: workers values, buildings values, days passed, game is over.
         assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
@@ -630,12 +599,10 @@ class VillageTest {
 
         village.AddProject("Castle");
 
-        // 25 days.
-        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
-        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
-        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
-        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
-        village.Day();  village.Day();  village.Day(); village.Day(); village.Day();
+        for (int i = 0; i < 25; i++){
+            village.Day();
+        }
+
 
         // Check: workers values, buildings values, days passed, game is over.
         assertEquals(10, village.getWorkers().size(), "Expected 10 workers");
